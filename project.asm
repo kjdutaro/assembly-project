@@ -30,16 +30,23 @@ includelib \masm32\lib\masm32.lib
 
 .data
 
-    menuheader db " *****Psychology Prospectus Viewer*****",10,10,0
+    menuheader db 10,10,"*****University of Mindanao BS in Psychology Prospectus Viewer*****",10,10,0
     menuprompt1 db "[1] View all",10,0
-    menuprompt2 db "[2] View by year and sem",10,10,0
+    menuprompt2 db "[2] View by year and sem",10,0
+    menuprompt3 db "[3] Enroll",10,0
+    menuprompt4 db "[4] Exit",10,10,0
     choiceprompt db "Your choice:",10,0
     cursor db "=> ",0
-    menuseparator db "***************************************",10,10,0
+    menuseparator db "*****************************************************",10,10,0
+
 
     semesterprompt db 10,"Enter semester: ",10,0
 
     yearprompt db 10,"Enter year: ",10,0
+
+    subjectprompt db 10,"Enter number of Subject/s: ",10,0
+
+    totalsubtotakeprompt db 10,"Enter number of Subject/s: ",10,0
 
     
     separator db 10,"======================================================================================================",0
@@ -120,26 +127,36 @@ includelib \masm32\lib\masm32.lib
     S423 db 10,8,32,"[3]PSY 502         3.0",9,9,"THEORIES OF PERSONALITY                               Graduating PSY 326",0
     S424 db 10,8,32,"[4]PSY 503         3.0",9,9,"INDUSTRIAL/ORGANIZATIONAL PSYCHOLOGY                  Graduating PSY 326",10,0
 
+
+    ;error handling
+    menuerr db "Error ni", 0
+
 .data?
     input db 1 dup(?)
     yearinp db 1 dup(?)
     seminp db 1 dup(?)
+    subjinp db 1 dup(?)
+    totalsubtotake DD ?
+    substaken DD ?
 
    
 .code
 
+
+
     start:
     
 display:
-invoke ClearScreen
 
+        invoke StdOut, addr menuheader
 
-    invoke StdOut, addr menuheader
-
-    
     invoke StdOut, addr menuprompt1
 
     invoke StdOut, addr menuprompt2
+
+    invoke StdOut, addr menuprompt3
+
+    invoke StdOut, addr menuprompt4
 
     invoke StdOut, addr menuseparator
 
@@ -151,122 +168,238 @@ invoke ClearScreen
 
   
     
-
-.if input == "1"
-
-
-;first year/ 1st sem  
-    invoke StdOut, addr Y1S1   
-    invoke StdOut, addr C11 
-    invoke StdOut, addr S111 
-    invoke StdOut, addr S112 
-    invoke StdOut, addr S113 
-    invoke StdOut, addr S114 
-    invoke StdOut, addr S115 
-    invoke StdOut, addr S116 
-;first year/ 2nd sem  
-    invoke StdOut, addr Y1S2 
-    invoke StdOut, addr C12 
-    invoke StdOut, addr S121 
-    invoke StdOut, addr S122
-    invoke StdOut, addr S123 
-    invoke StdOut, addr S124 
-    invoke StdOut, addr S125 
-    invoke StdOut, addr S126
-;first year/ SUMMER  
-    invoke StdOut, addr Y1S 
-    invoke StdOut, addr C1S 
-    invoke StdOut, addr S1S1 
-    invoke StdOut, addr S1S2
-    invoke StdOut, addr S1S3 
-;2nd year/ 1st sem
-    invoke StdOut, addr Y2S1 
-    invoke StdOut, addr C21 
-    invoke StdOut, addr S211 
-    invoke StdOut, addr S212 
-    invoke StdOut, addr S213 
-    invoke StdOut, addr S214
-    invoke StdOut, addr S215
-    invoke StdOut, addr S216
-;2nd year/ 2nd sem    
-    invoke StdOut, addr Y2S2 
-    invoke StdOut, addr C22 
-    invoke StdOut, addr S221 
-    invoke StdOut, addr S222 
-    invoke StdOut, addr S223 
-    invoke StdOut, addr S224 
-    invoke StdOut, addr S225
-    invoke StdOut, addr S226
-;3rd year/1st sem
-    invoke StdOut, addr Y3S1 
-    invoke StdOut, addr C31 
-    invoke StdOut, addr S311 
-    invoke StdOut, addr S312 
-    invoke StdOut, addr S313 	
-    invoke StdOut, addr S314 
-    invoke StdOut, addr S315 
-    invoke StdOut, addr S316
-    invoke StdOut, addr S317 
-    invoke StdOut, addr S318
-;3rd year/2nd sem    
-    invoke StdOut, addr Y3S2 
-    invoke StdOut, addr C32 
-    invoke StdOut, addr S321 
-    invoke StdOut, addr S322 
-    invoke StdOut, addr S323 
-    invoke StdOut, addr S324 
-    invoke StdOut, addr S325 
-    invoke StdOut, addr S326 
-;4th year/1st sem
-    invoke StdOut, addr Y4S1 
-    invoke StdOut, addr C41 
-    invoke StdOut, addr S411 
-    invoke StdOut, addr S412 
-    invoke StdOut, addr S413 
-    invoke StdOut, addr S414
-    invoke StdOut, addr S415  
-;4th year/2nd sem
-    invoke StdOut, addr Y4S2 
-    invoke StdOut, addr C42 
-    invoke StdOut, addr S421 
-    invoke StdOut, addr S422
-    invoke StdOut, addr S423 
-    invoke StdOut, addr S424 
-
-    invoke StdOut, addr separator
     
-.elseif input == "2"
+    .if input == "1"
 
-    invoke StdOut, addr yearprompt
+    ;first year/ 1st sem  
+        invoke StdOut, addr Y1S1   
+        invoke StdOut, addr C11 
+        invoke StdOut, addr S111 
+        invoke StdOut, addr S112 
+        invoke StdOut, addr S113 
+        invoke StdOut, addr S114 
+        invoke StdOut, addr S115 
+        invoke StdOut, addr S116 
+    ;first year/ 2nd sem  
+        invoke StdOut, addr Y1S2 
+        invoke StdOut, addr C12 
+        invoke StdOut, addr S121 
+        invoke StdOut, addr S122
+        invoke StdOut, addr S123 
+        invoke StdOut, addr S124 
+        invoke StdOut, addr S125 
+        invoke StdOut, addr S126
+    ;first year/ SUMMER  
+        invoke StdOut, addr Y1S 
+        invoke StdOut, addr C1S 
+        invoke StdOut, addr S1S1 
+        invoke StdOut, addr S1S2
+        invoke StdOut, addr S1S3 
+    ;2nd year/ 1st sem
+        invoke StdOut, addr Y2S1 
+        invoke StdOut, addr C21 
+        invoke StdOut, addr S211 
+        invoke StdOut, addr S212 
+        invoke StdOut, addr S213 
+        invoke StdOut, addr S214
+        invoke StdOut, addr S215
+        invoke StdOut, addr S216
+    ;2nd year/ 2nd sem    
+        invoke StdOut, addr Y2S2 
+        invoke StdOut, addr C22 
+        invoke StdOut, addr S221 
+        invoke StdOut, addr S222 
+        invoke StdOut, addr S223 
+        invoke StdOut, addr S224 
+        invoke StdOut, addr S225
+        invoke StdOut, addr S226
+    ;3rd year/1st sem
+        invoke StdOut, addr Y3S1 
+        invoke StdOut, addr C31 
+        invoke StdOut, addr S311 
+        invoke StdOut, addr S312 
+        invoke StdOut, addr S313    
+        invoke StdOut, addr S314 
+        invoke StdOut, addr S315 
+        invoke StdOut, addr S316
+        invoke StdOut, addr S317 
+        invoke StdOut, addr S318
+    ;3rd year/2nd sem    
+        invoke StdOut, addr Y3S2 
+        invoke StdOut, addr C32 
+        invoke StdOut, addr S321 
+        invoke StdOut, addr S322 
+        invoke StdOut, addr S323 
+        invoke StdOut, addr S324 
+        invoke StdOut, addr S325 
+        invoke StdOut, addr S326 
+    ;4th year/1st sem
+        invoke StdOut, addr Y4S1 
+        invoke StdOut, addr C41 
+        invoke StdOut, addr S411 
+        invoke StdOut, addr S412 
+        invoke StdOut, addr S413 
+        invoke StdOut, addr S414
+        invoke StdOut, addr S415  
+    ;4th year/2nd sem
+        invoke StdOut, addr Y4S2 
+        invoke StdOut, addr C42 
+        invoke StdOut, addr S421 
+        invoke StdOut, addr S422
+        invoke StdOut, addr S423 
+        invoke StdOut, addr S424 
 
-    invoke StdOut, addr cursor
-    
-    invoke StdIn, addr yearinp,50
-    
-    invoke StdOut, addr semesterprompt
+        invoke StdOut, addr separator
+        
+    .elseif input == "2"
 
-    invoke StdOut, addr cursor
-    
-    invoke StdIn, addr seminp,50
-    
+        invoke StdOut, addr yearprompt
+
+        invoke StdOut, addr cursor
+        
+        invoke StdIn, addr yearinp,50
+        
+        invoke StdOut, addr semesterprompt
+
+        invoke StdOut, addr cursor
+        
+        invoke StdIn, addr seminp,50
+        
 
 
-    .if yearinp == "1"
-        .if seminp == "1"
-            ;first year/ 1st sem  
-            invoke StdOut, addr Y1S1   
-            invoke StdOut, addr C11 
-            invoke StdOut, addr S111 
-            invoke StdOut, addr S112 
-            invoke StdOut, addr S113 
-            invoke StdOut, addr S114 
-            invoke StdOut, addr S115 
-            invoke StdOut, addr S116 
+        .if yearinp == "1"
+            .if seminp == "1"
+                ;first year/ 1st sem  
+                invoke StdOut, addr Y1S1   
+                invoke StdOut, addr C11 
+                invoke StdOut, addr S111 
+                invoke StdOut, addr S112 
+                invoke StdOut, addr S113 
+                invoke StdOut, addr S114 
+                invoke StdOut, addr S115 
+                invoke StdOut, addr S116 
+            .elseif seminp == "2"
+                ;first year/ 2nd sem  
+                invoke StdOut, addr Y1S2 
+                invoke StdOut, addr C12 
+                invoke StdOut, addr S121 
+                invoke StdOut, addr S122
+                invoke StdOut, addr S123 
+                invoke StdOut, addr S124 
+                invoke StdOut, addr S125 
+                invoke StdOut, addr S126
+            .elseif seminp == "3"
+                ;first year/ 2nd sem  
+                invoke StdOut, addr Y1S 
+                invoke StdOut, addr C1S 
+                invoke StdOut, addr S1S1 
+                invoke StdOut, addr S1S2
+                invoke StdOut, addr S1S3 
+            .endif
+
         .endif
+        
+        .if yearinp == "2"
+            .if seminp == "1"
+                ;2nd year/ 1st sem
+                invoke StdOut, addr Y2S1 
+                invoke StdOut, addr C21 
+                invoke StdOut, addr S211 
+                invoke StdOut, addr S212 
+                invoke StdOut, addr S213 
+                invoke StdOut, addr S214
+                invoke StdOut, addr S215
+                invoke StdOut, addr S216
+
+            .elseif seminp == "2"
+                ;2nd year/ 2nd sem    
+                invoke StdOut, addr Y2S2 
+                invoke StdOut, addr C22 
+                invoke StdOut, addr S221 
+                invoke StdOut, addr S222 
+                invoke StdOut, addr S223 
+                invoke StdOut, addr S224 
+                invoke StdOut, addr S225
+                invoke StdOut, addr S226
+            .endif
+        .endif
+        
+        .if yearinp == "3"
+            .if seminp == "1"
+            ;3rd year/1st sem
+                invoke StdOut, addr Y3S1 
+                invoke StdOut, addr C31 
+                invoke StdOut, addr S311 
+                invoke StdOut, addr S312 
+                invoke StdOut, addr S313    
+                invoke StdOut, addr S314 
+                invoke StdOut, addr S315 
+                invoke StdOut, addr S316
+                invoke StdOut, addr S317 
+                invoke StdOut, addr S318
+
+            .elseif seminp == "2"
+            ;3rd year/2nd sem    
+                invoke StdOut, addr Y3S2 
+                invoke StdOut, addr C32 
+                invoke StdOut, addr S321 
+                invoke StdOut, addr S322 
+                invoke StdOut, addr S323 
+                invoke StdOut, addr S324 
+                invoke StdOut, addr S325 
+                invoke StdOut, addr S326 
+            .endif
+        .endif
+        
+        .if yearinp == "4"
+            .if seminp == "1"
+            ;4th year/1st sem
+                invoke StdOut, addr Y4S1 
+                invoke StdOut, addr C41 
+                invoke StdOut, addr S411 
+                invoke StdOut, addr S412 
+                invoke StdOut, addr S413 
+                invoke StdOut, addr S414
+                invoke StdOut, addr S415 
+
+            .elseif seminp == "2"
+            ;4th year/1st sem
+                invoke StdOut, addr Y4S2 
+                invoke StdOut, addr C42 
+                invoke StdOut, addr S421 
+                invoke StdOut, addr S422
+                invoke StdOut, addr S423 
+                invoke StdOut, addr S424 
+            .endif
+        .endif
+
+    .elseif input == "3"    
+
+        invoke StdOut, addr yearprompt
+        invoke StdIn, addr yearinp,50
+        invoke StdOut, addr semesterprompt
+        invoke StdIn, addr seminp,50
+        invoke StdOut, addr totalsubtotakeprompt
+        invoke StdIn, addr totalsubtotake,50
+
+
+
+    .elseif input == "4"
+
+        invoke ExitProcess, 0
+
+    .else
+
+
+
     .endif
 
-.endif
-invoke ExitProcess, 0
+    jmp start
 
+    invoke ClearScreen
+    exit:
 
+    invoke ExitProcess, 0
+
+    
 end start
